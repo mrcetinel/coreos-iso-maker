@@ -1,5 +1,7 @@
+#####  RHCOS - OCP 4.2 Installation #####
+------------------------------------------
 # coreos-iso-maker
-Create a bunch of coreos ISOs for OCP 4.x installs when you need to set static IPs
+Create a bunch of coreos ISOs for OCP 4.2 installs when you need to set static IPs
 
 This project is borderline close to a gist but should be enough to get you started.
 
