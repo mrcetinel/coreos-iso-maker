@@ -1,14 +1,22 @@
-# coreos-iso-maker
-Create a bunch of coreos ISOs for OCP 4.x installs when you need to set static IPs
+# coreos-iso-maker V2.2
+This version incorporates the ability to generate either a single ISO for OCP 4.x
+installations or multiple ISOs depending on needs.  These ISOs are created for
+when you need statis IPs.
 
-This project is borderline close to a gist but should be enough to get you started.
+New in the version:  Make sure that genisoimage package is installed.
+Specially thanks to Scott Worthington (https://github.com/worsco)
+for this Pull Request.
 
 # Problem definition
 Some customers would like to use static IPs for their OCP nodes but don't have a
 working DHCP server for various reasons.  This can be done using the ISO for CoreOS
 and messing with the boot parameters.  However, this is involves lots of error prone
-typing.  This project is designed to work around that and create individualized ISOs
-for each node.
+typing.  This project is designed to work around that and originally created individualized ISOs
+for each node.  In v2.1, it can be used to  create a single ISO with a menu item for each node being
+built.  Due to screen space limitations, it is NOT recommend that you use this to create
+more than 7 nodes at a time (1 bootstrap, 3 master control planes, and 3 worker nodes).
+It _might_ work, but you might have problems with the display on boot.  Caveat user.
+If you would prefer to have multiple ISOs, there is a separate playbook for that.
 
 # Variables to define
 In the `group_vars/all.yml` file, define the following variables:
@@ -26,9 +34,9 @@ In the `group_vars/all.yml` file, define the following variables:
 `webserver_port` - webserver port for the webserver above
 
 
-`ocp_version` 	- OCP version you are going for.  Currently defaults to 4.2
+`ocp_version` 	- OCP version you are going for.  Currently defaults to 4.3
 
-`iso_checksum`	- sha256 checksum of the ISO.  Currently correct as of 2019-10-23 and OCP 4.2
+`iso_checksum`	- sha256 checksum of the ISO.  Currently correct as of 2020-01-23 and OCP 4.3
 
 `iso_name`	- Name of the ISO to download.  Makes certain assumptions that should be verified
 
@@ -40,10 +48,21 @@ In `inventory.yml` you will need to define your hosts:
 
 `masters`	- You will need to define `3` master nodes and their `ipv4` address
 
-`workers`	- However many worker nodes you want and their corresponding `ipv4` addresses
+`workers`	- However many worker nodes you want and their corresponding `ipv4` addresses.  Recommend no more than 3 at a go.
 
 You will need to use create individual ignition files and load them to your webserver.
 This project does NOT currently do that.
+
+Once the inventory is created, you can run either of the following commands:
+
+For single:
+`ansible-playbook playbook-single.yml -K`
+
+For multiple:
+`ansible-playbook playbook-multi.yml -K`
+
+The ISO(s) will be created in the `/tmp` directory.  The `-K` is to request for the BECOME password which is
+required to mount an ISO (assuming you don't have passwordless `sudo`).
 
 # Acknowlegements
 Special thanks to Shanna Chan for trailblazing these issues (detail 
