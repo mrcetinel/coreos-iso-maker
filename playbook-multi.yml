@@ -11,6 +11,12 @@
     become: true
     delegate_to: localhost
 
+  - name: Ensure httpd is installed
+    yum:
+      name: httpd
+    become: true
+    delegate_to: localhost
+    
   tasks:
 
   - block:
@@ -19,7 +25,12 @@
         url: https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ ocp_version }}/latest/{{ iso_name }}
         dest: /tmp
         checksum: sha256:{{ iso_checksum }}
-
+        
+    - name: Get the original ISO
+      get_url:
+        url: https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ ocp_version }}/latest/{{ rhcos_bios }}
+        dest: /var/www/html/
+        
     - name: Mount ISO
       mount:
         src: /tmp/{{ iso_name }}
